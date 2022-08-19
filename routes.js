@@ -1,5 +1,6 @@
 "use strict";
 
+const { request } = require("express");
 /** Routes for Lunchly */
 
 const express = require("express");
@@ -10,10 +11,20 @@ const Reservation = require("./models/reservation");
 const router = new express.Router();
 
 /** Homepage: show list of customers. */
-
+// could test if a query string was passed and then perform search,
+// otherwise show
+//request.quer
 router.get("/", async function (req, res, next) {
-  const customers = await Customer.all();
+  let customers;
+
+  if (req.query.searchTerm) {
+    customers = await Customer.find(req.query.searchTerm);
+  } else {
+    customers = await Customer.all();
+  }
+
   return res.render("customer_list.html", { customers });
+
 });
 
 /** Form to add a new customer. */

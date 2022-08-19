@@ -56,6 +56,30 @@ class Customer {
     return new Customer(customer);
   }
 
+  /**get any customers where search term matches part of first or last name */
+
+  static async find(name) {
+    const results = await db.query(
+      //const firstName = name.split(' ');
+      `SELECT id,
+                  first_name AS "firstName",
+                  last_name  AS "lastName",
+                  phone,
+                  notes
+           FROM customers
+           WHERE first_name ILIKE $1 OR last_name ILIKE $1`,
+      [`%${name}%`],
+    );
+
+    if (results === undefined) {
+      const err = new Error(`No results matching : ${name}`);
+      err.status = 404;
+      throw err;
+    }
+
+    return results.rows.map(c => new Customer(c));
+  }
+
   /** returns customer first & last name joined by space */
 
   fullName() {

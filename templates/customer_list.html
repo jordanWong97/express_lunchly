@@ -5,6 +5,10 @@
 <a class="btn btn-primary" style="float: right" href="/add/">Add a Customer</a>
 
 <h1>Customers</h1>
+<form class="m-1" method="get" action="/">
+  <input name="searchTerm" />
+  <button class="btn btn-primary btn-sm">search for customer</button>
+</form>
 
 <ul style="column-count: 4">
   {% for customer in customers %}
