@@ -10,7 +10,7 @@
   <button class="btn btn-primary btn-sm">search for customer</button>
 </form>
 
-<ul style="column-count: 4">
+<ol style="column-count: 4">
   {% for customer in customers %}
   <li>
     <a href="/{{ customer.id }}/">
@@ -18,6 +18,6 @@
     </a>
   </li>
   {% endfor %}
-</ul>
+</ol>
 
 {% endblock %}

@@ -57,13 +57,13 @@ class Customer {
   }
 
   /**get any customers where search term matches part of first or last name */
-
+  // try to refactor with concat and without the firstname/lastname, so using only one term
   static async find(name) {
 
     const fullName = name.split(' ');
     const firstName = fullName[0];
     const lastName = fullName[fullName.length - 1];
-    debugger;
+
     const results = await db.query(
 
       `SELECT id,
@@ -98,7 +98,7 @@ class Customer {
               COUNT(*) AS count
         FROM reservations AS r
         JOIN customers as c ON c.id = r.customer_id
-        GROUP BY c.id, c.first_name, c.last_name, c.phone, c.notes
+        GROUP BY c.id
         ORDER BY count DESC
         LIMIT 10
     `
@@ -109,6 +109,7 @@ class Customer {
 
   /** returns customer first & last name joined by space */
 
+    // refactor w string interpolation
   fullName() {
     return this.firstName + ' ' + this.lastName;
   }
