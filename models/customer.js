@@ -59,16 +59,22 @@ class Customer {
   /**get any customers where search term matches part of first or last name */
 
   static async find(name) {
+
+    const fullName = name.split(' ');
+    const firstName = fullName[0];
+    const lastName = fullName[fullName.length - 1];
+    debugger;
     const results = await db.query(
-      //const firstName = name.split(' ');
+
       `SELECT id,
                   first_name AS "firstName",
                   last_name  AS "lastName",
                   phone,
                   notes
            FROM customers
-           WHERE first_name ILIKE $1 OR last_name ILIKE $1`,
-      [`%${name}%`],
+           WHERE first_name ILIKE $1 OR last_name ILIKE $1 OR
+                  (first_name ILIKE $2 AND last_name ILIKE $3)`,
+      [`%${name}%`,`%${firstName}%`,`%${lastName}%`]
     );
 
     if (results === undefined) {
@@ -78,6 +84,27 @@ class Customer {
     }
 
     return results.rows.map(c => new Customer(c));
+  }
+
+  /** Returns top 10 customer by most reservations */
+  static async topTen() {
+
+  const results = await db.query(
+      `SELECT c.id AS id,
+              c.first_name AS "firstName",
+              c.last_name AS "lastName",
+              c.phone,
+              c.notes,
+              COUNT(*) AS count
+        FROM reservations AS r
+        JOIN customers as c ON c.id = r.customer_id
+        GROUP BY c.id, c.first_name, c.last_name, c.phone, c.notes
+        ORDER BY count DESC
+        LIMIT 10
+    `
+    );
+
+    return results.rows.map(row => new Customer(row));
   }
 
   /** returns customer first & last name joined by space */
@@ -92,7 +119,7 @@ class Customer {
     return await Reservation.getReservationsForCustomer(this.id);
   }
 
-  /** save this customer. */
+  /** saves customer for creation / updating. */
 
   async save() {
     if (this.id === undefined) {

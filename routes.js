@@ -10,10 +10,8 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
-/** Homepage: show list of customers. */
-// could test if a query string was passed and then perform search,
-// otherwise show
-//request.quer
+/** Shows filtered results of customers if applicable
+ * otherwise returns all customers*/
 router.get("/", async function (req, res, next) {
   let customers;
 
@@ -43,6 +41,15 @@ router.post("/add/", async function (req, res, next) {
   return res.redirect(`/${customer.id}/`);
 });
 
+
+/** Displays top 10 customers with the most reservations */
+
+router.get("/top-ten/", async function (req, res, next) {
+  const customers = await Customer.topTen();
+  return res.render("customer_list.html", { customers });
+});
+
+
 /** Show a customer, given their ID. */
 
 router.get("/:id/", async function (req, res, next) {
@@ -53,6 +60,7 @@ router.get("/:id/", async function (req, res, next) {
   return res.render("customer_detail.html", { customer, reservations });
 });
 
+
 /** Show form to edit a customer. */
 
 router.get("/:id/edit/", async function (req, res, next) {
@@ -60,6 +68,7 @@ router.get("/:id/edit/", async function (req, res, next) {
 
   res.render("customer_edit_form.html", { customer });
 });
+
 
 /** Handle editing a customer. */
 
